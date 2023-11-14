@@ -1,1 +1,1 @@
-GOOS=windows go run main.go
+GOOS=windows go run cmd/gravity/main.go
