@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	MAX_X          = 800
-	MAX_Y          = 800
+	MAX_X          = 600
+	MAX_Y          = 600
 	GRAVITY_RADIUS = 100
 	G              = 9.83
 )
@@ -35,25 +35,20 @@ func NewParticle(m, x, y, vx, vy float64, color color.Color) *Particle {
 	}
 }
 
-type ParticleGroup struct {
-	Particles []*Particle
-}
-
-func RandomParticleGroup(n int) *ParticleGroup {
-	return &ParticleGroup{
-		Particles: RandomParticles(n),
+func ColouredParticles(number int, color color.Color) []*Particle {
+	particles := make([]*Particle, 0, number)
+	for i := 0; i < number; i++ {
+		x, y := RandomPosition()
+		particles = append(particles, NewParticle(3, x, y, 0, 0, color))
 	}
-}
-
-func (pg *ParticleGroup) Step() {
+	return particles
 }
 
 func RandomParticles(number int) []*Particle {
 	particles := make([]*Particle, 0, number)
 	for i := 0; i < number; i++ {
 		x, y := RandomPosition()
-		particles = append(particles, NewParticle(3, x, y, 2, 2, colornames.Lightyellow))
-		// particles = append(particles, NewParticle(3, x, y, 3, 3, randomColor()))
+		particles = append(particles, NewParticle(3, x, y, 0, 0, RandomColor()))
 	}
 	return particles
 }
@@ -88,16 +83,28 @@ func Interaction1(p1, p2 []*Particle, g float64) {
 				fy += (f * dy)
 			}
 		}
+
+		// not go beyond screen
+		if a.X >= MAX_X {
+			a.Vx *= -1
+			a.X = MAX_X - 5
+		}
+		if a.X <= 0 {
+			a.Vx *= -1
+			a.X = 0
+		}
+		if a.Y <= 0 {
+			a.Vy *= -1
+			a.Y = 0
+		}
+		if a.Y >= MAX_Y {
+			a.Vy *= -1
+			a.Y = MAX_Y - 5
+		}
+
 		a.Vx = (a.Vx + fx) * 0.5
 		a.Vy = (a.Vy + fy) * 0.5
 		a.X += a.Vx
 		a.Y += a.Vy
-		// not go beyond screen
-		if a.X <= 0 || a.X >= MAX_X {
-			a.Vx *= -1
-		}
-		if a.Y <= 0 || a.Y >= MAX_Y {
-			a.Vy *= -1
-		}
 	}
 }
